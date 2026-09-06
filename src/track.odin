@@ -5,6 +5,7 @@ import "core:math/rand"
 SEGMENT_LENGTH :: 20.0
 TRACK_SPAWN_AHEAD :: 40.0
 TRACK_RECYCLE_BEHIND :: 20.0
+OBSTACLE_HEIGHT :: 0.6
 
 Segment :: struct {
 	blocked: [Lane]bool,
@@ -42,7 +43,10 @@ segment_to_obstacles :: proc(s: Segment, start_z: f32) -> Segment_Obstacles {
 	mid_z := start_z + SEGMENT_LENGTH / 2
 	for lane in Lane {
 		if s.blocked[lane] {
-			result.items[result.count] = Obstacle{pos = {lane_x(lane), 0.5, mid_z}, size = {1, 1, 1}}
+			result.items[result.count] = Obstacle {
+				pos  = {lane_x(lane), OBSTACLE_HEIGHT / 2, mid_z},
+				size = {1, OBSTACLE_HEIGHT, 1},
+			}
 			result.count += 1
 		}
 	}

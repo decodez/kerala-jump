@@ -5,8 +5,8 @@ import rl "vendor:raylib"
 LANE_WIDTH :: 2.0
 LANE_SWITCH_SPEED :: 12.0
 GROUND_Y :: RUNNER_SIZE.y / 2
-JUMP_SPEED :: 10.0
-GRAVITY :: -30.0
+JUMP_SPEED :: 12.0
+GRAVITY :: -25.0
 FORWARD_SPEED :: 6.0
 
 Lane :: enum {
