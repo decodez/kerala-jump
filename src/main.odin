@@ -10,23 +10,28 @@ main :: proc() {
 
 	rl.SetTargetFPS(60)
 
-	runner_pos := rl.Vector3{0, RUNNER_SIZE.y / 2, 0}
+	player := player_init()
 
 	camera := rl.Camera3D {
-		position   = runner_pos + {0, 3, -6},
-		target     = runner_pos + {0, 0, 2},
+		position   = {0, 3, -6},
+		target     = {0, 0, 2},
 		up         = {0, 1, 0},
 		fovy       = 60,
 		projection = .PERSPECTIVE,
 	}
 
 	for !rl.WindowShouldClose() {
+		dt := rl.GetFrameTime()
+
+		player_handle_input(&player)
+		player_update(&player, dt)
+
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RAYWHITE)
 
 		rl.BeginMode3D(camera)
 		rl.DrawGrid(20, 1)
-		rl.DrawCube(runner_pos, RUNNER_SIZE.x, RUNNER_SIZE.y, RUNNER_SIZE.z, rl.MAROON)
+		rl.DrawCube(player.pos, RUNNER_SIZE.x, RUNNER_SIZE.y, RUNNER_SIZE.z, rl.MAROON)
 		rl.EndMode3D()
 
 		rl.EndDrawing()
