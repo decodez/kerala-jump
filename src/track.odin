@@ -6,6 +6,19 @@ Segment :: struct {
 	blocked: [Lane]bool,
 }
 
+// Every entry must satisfy segment_is_fair (guarded by
+// test_segment_pool_is_all_fair) — never assemble a layout that blocks all
+// 3 lanes.
+SEGMENT_POOL := []Segment{
+	{},
+	{blocked = #partial{.Left = true}},
+	{blocked = #partial{.Center = true}},
+	{blocked = #partial{.Right = true}},
+	{blocked = #partial{.Left = true, .Right = true}},
+	{blocked = #partial{.Left = true, .Center = true}},
+	{blocked = #partial{.Center = true, .Right = true}},
+}
+
 segment_is_fair :: proc(s: Segment) -> bool {
 	for lane in Lane {
 		if !s.blocked[lane] {

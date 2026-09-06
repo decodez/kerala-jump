@@ -47,3 +47,10 @@ test_segment_to_obstacles_centers_in_segment_length :: proc(t: ^testing.T) {
 	result := segment_to_obstacles(s, 100)
 	testing.expect_value(t, result.items[0].pos.z, f32(100) + SEGMENT_LENGTH / 2)
 }
+
+@(test)
+test_segment_pool_is_all_fair :: proc(t: ^testing.T) {
+	for s in SEGMENT_POOL {
+		testing.expect(t, segment_is_fair(s))
+	}
+}
