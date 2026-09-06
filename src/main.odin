@@ -12,7 +12,8 @@ main :: proc() {
 
 	player := player_init()
 
-	obstacle := Obstacle{pos = {0, 0.5, 10}, size = {1, 1, 1}}
+	track := track_init()
+	defer track_destroy(&track)
 
 	camera := rl.Camera3D {
 		position   = {0, 3, -6},
@@ -30,14 +31,20 @@ main :: proc() {
 		if game_over {
 			if rl.IsKeyPressed(.ENTER) {
 				player = player_init()
+				track_destroy(&track)
+				track = track_init()
 				game_over = false
 			}
 		} else {
 			player_handle_input(&player)
 			player_update(&player, dt)
+			track_update(&track, player.pos.z)
 
-			if aabb_overlap(player.pos, RUNNER_SIZE, obstacle.pos, obstacle.size) {
-				game_over = true
+			for o in track.obstacles {
+				if aabb_overlap(player.pos, RUNNER_SIZE, o.pos, o.size) {
+					game_over = true
+					break
+				}
 			}
 		}
 
@@ -50,7 +57,9 @@ main :: proc() {
 		rl.BeginMode3D(camera)
 		rl.DrawGrid(20, 1)
 		rl.DrawCube(player.pos, RUNNER_SIZE.x, RUNNER_SIZE.y, RUNNER_SIZE.z, rl.MAROON)
-		obstacle_draw(obstacle)
+		for o in track.obstacles {
+			obstacle_draw(o)
+		}
 		rl.EndMode3D()
 
 		if game_over {

@@ -1,6 +1,10 @@
 package main
 
+import "core:math/rand"
+
 SEGMENT_LENGTH :: 20.0
+TRACK_SPAWN_AHEAD :: 40.0
+TRACK_RECYCLE_BEHIND :: 20.0
 
 Segment :: struct {
 	blocked: [Lane]bool,
@@ -43,4 +47,34 @@ segment_to_obstacles :: proc(s: Segment, start_z: f32) -> Segment_Obstacles {
 		}
 	}
 	return result
+}
+
+Track :: struct {
+	next_spawn_z: f32,
+	obstacles:    [dynamic]Obstacle,
+}
+
+track_init :: proc() -> Track {
+	return Track{next_spawn_z = SEGMENT_LENGTH}
+}
+
+track_destroy :: proc(tr: ^Track) {
+	delete(tr.obstacles)
+}
+
+track_update :: proc(tr: ^Track, player_z: f32) {
+	for tr.next_spawn_z < player_z + TRACK_SPAWN_AHEAD {
+		s := SEGMENT_POOL[rand.int_max(len(SEGMENT_POOL))]
+		placed := segment_to_obstacles(s, tr.next_spawn_z)
+		for i in 0 ..< placed.count {
+			append(&tr.obstacles, placed.items[i])
+		}
+		tr.next_spawn_z += SEGMENT_LENGTH
+	}
+
+	for i := len(tr.obstacles) - 1; i >= 0; i -= 1 {
+		if tr.obstacles[i].pos.z < player_z - TRACK_RECYCLE_BEHIND {
+			ordered_remove(&tr.obstacles, i)
+		}
+	}
 }
