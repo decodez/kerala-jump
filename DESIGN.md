@@ -89,6 +89,7 @@ Out of scope (deliberately):
 - D-006: Rendering library
 - D-007: Obstacle/level generation approach
 - D-008: Behavior when score reaches the 999 cap
+- D-009: TDD scope (pure logic vs. whole codebase)
 
 ## Failure modes to handle (not optional)
 
@@ -113,3 +114,6 @@ Out of scope (deliberately):
   state.
 - Forward speed visibly increases over the course of a run.
 - High score persists across sessions in a local file.
+- Speed Curve, Score/999-cap transition, High Score persistence, and Segment
+  fairness (D-009) are covered by tests written before their implementation.
+- Rendering, input, and movement feel are confirmed by playtesting, not tests.

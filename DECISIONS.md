@@ -62,3 +62,9 @@ Decision: Reaching a score of 999 ends the run as a deliberate "max score" win s
 Options: Silently clamp the displayed score at 999 while gameplay continues indefinitely; let the score overflow past 999; end the run at 999 as an intentional win condition.
 Why: The 999 cap was already specified in DESIGN.md. Treating it as a genuine finish line gives it a purpose — something to design a screen and a moment around — instead of it being an arbitrary display quirk.
 AI involvement: suggested and accepted.
+
+## D-009: TDD scope — pure logic only, not the whole codebase (2026-09-06)
+Decision: Test-drive the pure-logic modules (Speed Curve, Score/999-cap transition to Max Score Win, High Score file read/write including the missing/corrupt-file default-to-0 case, and Segment selection guaranteeing a clear lane). Rendering, input, camera framing, and movement "feel" are validated by playtesting instead, not by tests-first.
+Options: Full TDD across the whole codebase; no formal testing, playtesting only; TDD limited to the pure-logic layer.
+Why: This project's sibling portfolio projects mandate TDD-first, but they're backend services where correctness is the whole point. A game's feel (jump arc, camera, collision responsiveness) isn't something a unit test can validate — that needs a human playing it — so forcing tests-first there would produce tests that check numbers moved, not that the game feels right. The logic that IS deterministic and rule-based (score math, persistence, segment fairness) gets real test-first value: it's exactly the kind of code that's easy to get subtly wrong and easy to specify with a test.
+AI involvement: suggested and accepted.
