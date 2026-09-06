@@ -7,6 +7,7 @@ LANE_SWITCH_SPEED :: 12.0
 GROUND_Y :: RUNNER_SIZE.y / 2
 JUMP_SPEED :: 10.0
 GRAVITY :: -30.0
+FORWARD_SPEED :: 6.0
 
 Lane :: enum {
 	Left,
@@ -56,6 +57,10 @@ player_handle_input :: proc(p: ^Player) {
 }
 
 player_update :: proc(p: ^Player, dt: f32) {
+	// Constant for now; the Speed Curve (D-009, distance-based) replaces
+	// this once score.odin exists.
+	p.pos.z += FORWARD_SPEED * dt
+
 	p.pos.x = rl.Lerp(p.pos.x, lane_x(p.lane), LANE_SWITCH_SPEED * dt)
 
 	p.vel_y += GRAVITY * dt

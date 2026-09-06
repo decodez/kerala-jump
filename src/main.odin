@@ -22,11 +22,27 @@ main :: proc() {
 		projection = .PERSPECTIVE,
 	}
 
+	game_over := false
+
 	for !rl.WindowShouldClose() {
 		dt := rl.GetFrameTime()
 
-		player_handle_input(&player)
-		player_update(&player, dt)
+		if game_over {
+			if rl.IsKeyPressed(.ENTER) {
+				player = player_init()
+				game_over = false
+			}
+		} else {
+			player_handle_input(&player)
+			player_update(&player, dt)
+
+			if aabb_overlap(player.pos, RUNNER_SIZE, obstacle.pos, obstacle.size) {
+				game_over = true
+			}
+		}
+
+		camera.position = {0, 3, player.pos.z - 6}
+		camera.target = {0, 0, player.pos.z + 2}
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RAYWHITE)
@@ -36,6 +52,10 @@ main :: proc() {
 		rl.DrawCube(player.pos, RUNNER_SIZE.x, RUNNER_SIZE.y, RUNNER_SIZE.z, rl.MAROON)
 		obstacle_draw(obstacle)
 		rl.EndMode3D()
+
+		if game_over {
+			rl.DrawText("GAME OVER - press Enter to restart", 320, 340, 24, rl.BLACK)
+		}
 
 		rl.EndDrawing()
 	}
