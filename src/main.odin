@@ -12,6 +12,8 @@ main :: proc() {
 
 	player := player_init()
 
+	obstacle := Obstacle{pos = {0, 0.5, 10}, size = {1, 1, 1}}
+
 	camera := rl.Camera3D {
 		position   = {0, 3, -6},
 		target     = {0, 0, 2},
@@ -32,6 +34,7 @@ main :: proc() {
 		rl.BeginMode3D(camera)
 		rl.DrawGrid(20, 1)
 		rl.DrawCube(player.pos, RUNNER_SIZE.x, RUNNER_SIZE.y, RUNNER_SIZE.z, rl.MAROON)
+		obstacle_draw(obstacle)
 		rl.EndMode3D()
 
 		rl.EndDrawing()
