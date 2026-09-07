@@ -23,6 +23,9 @@ main :: proc() {
 	runner_model := rl.LoadModel("assets/models/runner.glb")
 	defer rl.UnloadModel(runner_model)
 
+	obstacle_model := rl.LoadModel("assets/models/obstacle_wall.glb")
+	defer rl.UnloadModel(obstacle_model)
+
 	camera := rl.Camera3D {
 		position   = {0, 3, -6},
 		target     = {0, 0, 2},
@@ -79,7 +82,7 @@ main :: proc() {
 		runner_render_pos := player.pos - rl.Vector3{0, RUNNER_SIZE.y / 2, 0}
 		rl.DrawModel(runner_model, runner_render_pos, 1.0, rl.WHITE)
 		for o in track.obstacles {
-			obstacle_draw(o)
+			obstacle_draw(o, obstacle_model)
 		}
 		rl.EndMode3D()
 
