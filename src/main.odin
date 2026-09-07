@@ -23,28 +23,32 @@ main :: proc() {
 		projection = .PERSPECTIVE,
 	}
 
-	game_over := false
+	state := Game_State.Playing
 
 	for !rl.WindowShouldClose() {
 		dt := rl.GetFrameTime()
 
-		if game_over {
-			if rl.IsKeyPressed(.ENTER) {
-				player = player_init()
-				track_destroy(&track)
-				track = track_init()
-				game_over = false
-			}
-		} else {
+		switch state {
+		case .Playing:
 			player_handle_input(&player)
 			player_update(&player, dt)
 			track_update(&track, player.pos.z)
 
 			for o in track.obstacles {
 				if aabb_overlap(player.pos, RUNNER_SIZE, o.pos, o.size) {
-					game_over = true
+					state = .Game_Over
 					break
 				}
+			}
+			if is_max_score(player.pos.z) {
+				state = .Max_Score_Win
+			}
+		case .Game_Over, .Max_Score_Win:
+			if rl.IsKeyPressed(.ENTER) {
+				player = player_init()
+				track_destroy(&track)
+				track = track_init()
+				state = .Playing
 			}
 		}
 
@@ -62,8 +66,15 @@ main :: proc() {
 		}
 		rl.EndMode3D()
 
-		if game_over {
+		score := score_for_distance(player.pos.z)
+		rl.DrawText(rl.TextFormat("SCORE: %03d", i32(score)), 20, 20, 24, rl.BLACK)
+
+		switch state {
+		case .Playing:
+		case .Game_Over:
 			rl.DrawText("GAME OVER - press Enter to restart", 320, 340, 24, rl.BLACK)
+		case .Max_Score_Win:
+			rl.DrawText("MAX SCORE! 999 - press Enter to restart", 280, 340, 24, rl.DARKGREEN)
 		}
 
 		rl.EndDrawing()
