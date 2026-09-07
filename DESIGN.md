@@ -90,6 +90,7 @@ Out of scope (deliberately):
 - D-007: Obstacle/level generation approach
 - D-008: Behavior when score reaches the 999 cap
 - D-009: TDD scope (pure logic vs. whole codebase)
+- D-010: Uniform obstacle collision height vs. matching each visual model
 
 ## Failure modes to handle (not optional)
 
