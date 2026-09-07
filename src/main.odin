@@ -17,6 +17,12 @@ main :: proc() {
 
 	high_score := highscore_load(HIGHSCORE_PATH)
 
+	// Models are authored with origin at the base (feet/floor); Player/
+	// Obstacle positions are center-based for collision math (tested), so
+	// the base offset is applied only here, at the draw call.
+	runner_model := rl.LoadModel("assets/models/runner.glb")
+	defer rl.UnloadModel(runner_model)
+
 	camera := rl.Camera3D {
 		position   = {0, 3, -6},
 		target     = {0, 0, 2},
@@ -70,7 +76,8 @@ main :: proc() {
 
 		rl.BeginMode3D(camera)
 		rl.DrawGrid(20, 1)
-		rl.DrawCube(player.pos, RUNNER_SIZE.x, RUNNER_SIZE.y, RUNNER_SIZE.z, rl.MAROON)
+		runner_render_pos := player.pos - rl.Vector3{0, RUNNER_SIZE.y / 2, 0}
+		rl.DrawModel(runner_model, runner_render_pos, 1.0, rl.WHITE)
 		for o in track.obstacles {
 			obstacle_draw(o)
 		}
