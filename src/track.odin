@@ -8,7 +8,7 @@ TRACK_RECYCLE_BEHIND :: 20.0
 OBSTACLE_HEIGHT :: 0.6
 
 Segment :: struct {
-	blocked: [Lane]bool,
+	kind: [Lane]Obstacle_Kind,
 }
 
 // Every entry must satisfy segment_is_fair (guarded by
@@ -16,17 +16,17 @@ Segment :: struct {
 // 3 lanes.
 SEGMENT_POOL := []Segment{
 	{},
-	{blocked = #partial{.Left = true}},
-	{blocked = #partial{.Center = true}},
-	{blocked = #partial{.Right = true}},
-	{blocked = #partial{.Left = true, .Right = true}},
-	{blocked = #partial{.Left = true, .Center = true}},
-	{blocked = #partial{.Center = true, .Right = true}},
+	{kind = #partial{.Left = .Wall}},
+	{kind = #partial{.Center = .Pookalam}},
+	{kind = #partial{.Right = .Handcart}},
+	{kind = #partial{.Left = .Wall, .Right = .Handcart}},
+	{kind = #partial{.Left = .Pookalam, .Center = .Wall}},
+	{kind = #partial{.Center = .Handcart, .Right = .Pookalam}},
 }
 
 segment_is_fair :: proc(s: Segment) -> bool {
 	for lane in Lane {
-		if !s.blocked[lane] {
+		if s.kind[lane] == .None {
 			return true
 		}
 	}
@@ -42,10 +42,11 @@ segment_to_obstacles :: proc(s: Segment, start_z: f32) -> Segment_Obstacles {
 	result: Segment_Obstacles
 	mid_z := start_z + SEGMENT_LENGTH / 2
 	for lane in Lane {
-		if s.blocked[lane] {
+		if s.kind[lane] != .None {
 			result.items[result.count] = Obstacle {
 				pos  = {lane_x(lane), OBSTACLE_HEIGHT / 2, mid_z},
 				size = {1, OBSTACLE_HEIGHT, 1},
+				kind = s.kind[lane],
 			}
 			result.count += 1
 		}

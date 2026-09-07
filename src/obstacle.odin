@@ -2,9 +2,17 @@ package main
 
 import rl "vendor:raylib"
 
+Obstacle_Kind :: enum {
+	None,
+	Wall,
+	Pookalam,
+	Handcart,
+}
+
 Obstacle :: struct {
 	pos:  rl.Vector3,
 	size: rl.Vector3,
+	kind: Obstacle_Kind,
 }
 
 obstacle_draw :: proc(o: Obstacle, model: rl.Model) {
