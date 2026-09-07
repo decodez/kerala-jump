@@ -15,6 +15,8 @@ main :: proc() {
 	track := track_init()
 	defer track_destroy(&track)
 
+	high_score := highscore_load(HIGHSCORE_PATH)
+
 	camera := rl.Camera3D {
 		position   = {0, 3, -6},
 		target     = {0, 0, 2},
@@ -43,6 +45,14 @@ main :: proc() {
 			if is_max_score(player.pos.z) {
 				state = .Max_Score_Win
 			}
+
+			if state != .Playing {
+				final_score := score_for_distance(player.pos.z)
+				if final_score > high_score {
+					high_score = final_score
+					highscore_save(HIGHSCORE_PATH, high_score)
+				}
+			}
 		case .Game_Over, .Max_Score_Win:
 			if rl.IsKeyPressed(.ENTER) {
 				player = player_init()
@@ -68,6 +78,7 @@ main :: proc() {
 
 		score := score_for_distance(player.pos.z)
 		rl.DrawText(rl.TextFormat("SCORE: %03d", i32(score)), 20, 20, 24, rl.BLACK)
+		rl.DrawText(rl.TextFormat("HIGH: %03d", i32(high_score)), 20, 50, 20, rl.GRAY)
 
 		switch state {
 		case .Playing:
