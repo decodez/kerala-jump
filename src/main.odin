@@ -36,8 +36,15 @@ main :: proc() {
 		rl.UnloadModel(obstacle_models[.Handcart])
 	}
 
-	palm_model := rl.LoadModel("assets/models/palm_tree.glb")
-	defer rl.UnloadModel(palm_model)
+	prop_models: [Prop_Kind]rl.Model
+	prop_models[.Palm] = rl.LoadModel("assets/models/palm_tree.glb")
+	prop_models[.Banana] = rl.LoadModel("assets/models/banana_plant.glb")
+	prop_models[.House] = rl.LoadModel("assets/models/kerala_house.glb")
+	defer {
+		rl.UnloadModel(prop_models[.Palm])
+		rl.UnloadModel(prop_models[.Banana])
+		rl.UnloadModel(prop_models[.House])
+	}
 
 	camera := rl.Camera3D {
 		position   = {0, 3, -6},
@@ -101,7 +108,7 @@ main :: proc() {
 			obstacle_draw(o, obstacle_models[o.kind])
 		}
 		for p in scenery.props {
-			rl.DrawModel(palm_model, p.pos, 1.0, rl.WHITE)
+			scenery_draw(p, prop_models)
 		}
 		rl.EndMode3D()
 

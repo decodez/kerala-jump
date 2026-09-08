@@ -1,5 +1,6 @@
 package main
 
+import "core:math/rand"
 import rl "vendor:raylib"
 
 // Non-colliding set-dressing (palm trees, houses) lining the street. Spawn
@@ -7,8 +8,25 @@ import rl "vendor:raylib"
 // obstacle placement — mood only, never checked for collision.
 PROP_SIDE_X :: 6.0
 
+Prop_Kind :: enum {
+	Palm,
+	Banana,
+	House,
+}
+
+random_prop_kind :: proc() -> Prop_Kind {
+	return Prop_Kind(rand.int_max(len(Prop_Kind)))
+}
+
 Prop :: struct {
-	pos: rl.Vector3,
+	pos:  rl.Vector3,
+	kind: Prop_Kind,
+}
+
+// Prop.pos is base-origin directly (unlike Obstacle, never used for
+// collision, so no center offset is needed).
+scenery_draw :: proc(p: Prop, models: [Prop_Kind]rl.Model) {
+	rl.DrawModel(models[p.kind], p.pos, 1.0, rl.WHITE)
 }
 
 Scenery :: struct {
@@ -27,8 +45,8 @@ scenery_destroy :: proc(s: ^Scenery) {
 scenery_update :: proc(s: ^Scenery, player_z: f32) {
 	for s.next_spawn_z < player_z + SPAWN_AHEAD {
 		mid_z := s.next_spawn_z + SEGMENT_LENGTH / 2
-		append(&s.props, Prop{pos = {-PROP_SIDE_X, 0, mid_z}})
-		append(&s.props, Prop{pos = {PROP_SIDE_X, 0, mid_z}})
+		append(&s.props, Prop{pos = {-PROP_SIDE_X, 0, mid_z}, kind = random_prop_kind()})
+		append(&s.props, Prop{pos = {PROP_SIDE_X, 0, mid_z}, kind = random_prop_kind()})
 		s.next_spawn_z += SEGMENT_LENGTH
 	}
 
