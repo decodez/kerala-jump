@@ -3,8 +3,6 @@ package main
 import "core:math/rand"
 
 SEGMENT_LENGTH :: 20.0
-TRACK_SPAWN_AHEAD :: 40.0
-TRACK_RECYCLE_BEHIND :: 20.0
 OBSTACLE_HEIGHT :: 0.6
 
 Segment :: struct {
@@ -68,7 +66,7 @@ track_destroy :: proc(tr: ^Track) {
 }
 
 track_update :: proc(tr: ^Track, player_z: f32) {
-	for tr.next_spawn_z < player_z + TRACK_SPAWN_AHEAD {
+	for tr.next_spawn_z < player_z + SPAWN_AHEAD {
 		s := SEGMENT_POOL[rand.int_max(len(SEGMENT_POOL))]
 		placed := segment_to_obstacles(s, tr.next_spawn_z)
 		for i in 0 ..< placed.count {
@@ -77,9 +75,7 @@ track_update :: proc(tr: ^Track, player_z: f32) {
 		tr.next_spawn_z += SEGMENT_LENGTH
 	}
 
-	for i := len(tr.obstacles) - 1; i >= 0; i -= 1 {
-		if tr.obstacles[i].pos.z < player_z - TRACK_RECYCLE_BEHIND {
-			ordered_remove(&tr.obstacles, i)
-		}
-	}
+	recycle_behind(&tr.obstacles, player_z, RECYCLE_BEHIND, proc(o: Obstacle) -> f32 {
+		return o.pos.z
+	})
 }

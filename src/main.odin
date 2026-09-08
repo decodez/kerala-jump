@@ -15,6 +15,9 @@ main :: proc() {
 	track := track_init()
 	defer track_destroy(&track)
 
+	scenery := scenery_init()
+	defer scenery_destroy(&scenery)
+
 	high_score := highscore_load(HIGHSCORE_PATH)
 
 	// Models are authored with origin at the base (feet/floor); Player/
@@ -32,6 +35,9 @@ main :: proc() {
 		rl.UnloadModel(obstacle_models[.Pookalam])
 		rl.UnloadModel(obstacle_models[.Handcart])
 	}
+
+	palm_model := rl.LoadModel("assets/models/palm_tree.glb")
+	defer rl.UnloadModel(palm_model)
 
 	camera := rl.Camera3D {
 		position   = {0, 3, -6},
@@ -51,6 +57,7 @@ main :: proc() {
 			player_handle_input(&player)
 			player_update(&player, dt)
 			track_update(&track, player.pos.z)
+			scenery_update(&scenery, player.pos.z)
 
 			for o in track.obstacles {
 				if aabb_overlap(player.pos, RUNNER_SIZE, o.pos, o.size) {
@@ -74,6 +81,8 @@ main :: proc() {
 				player = player_init()
 				track_destroy(&track)
 				track = track_init()
+				scenery_destroy(&scenery)
+				scenery = scenery_init()
 				state = .Playing
 			}
 		}
@@ -90,6 +99,9 @@ main :: proc() {
 		rl.DrawModel(runner_model, runner_render_pos, 1.0, rl.WHITE)
 		for o in track.obstacles {
 			obstacle_draw(o, obstacle_models[o.kind])
+		}
+		for p in scenery.props {
+			rl.DrawModel(palm_model, p.pos, 1.0, rl.WHITE)
 		}
 		rl.EndMode3D()
 
