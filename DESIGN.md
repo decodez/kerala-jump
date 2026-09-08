@@ -91,6 +91,7 @@ Out of scope (deliberately):
 - D-008: Behavior when score reaches the 999 cap
 - D-009: TDD scope (pure logic vs. whole codebase)
 - D-010: Uniform obstacle collision height vs. matching each visual model
+- D-011: Basic lighting shader added; flat look diagnosed as palette, not a pipeline bug (fix approach open)
 
 ## Failure modes to handle (not optional)
 

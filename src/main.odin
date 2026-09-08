@@ -46,6 +46,17 @@ main :: proc() {
 		rl.UnloadModel(prop_models[.House])
 	}
 
+	lighting_shader := load_lighting_shader()
+	defer rl.UnloadShader(lighting_shader)
+
+	apply_shader(&runner_model, lighting_shader)
+	apply_shader(&obstacle_models[.Wall], lighting_shader)
+	apply_shader(&obstacle_models[.Pookalam], lighting_shader)
+	apply_shader(&obstacle_models[.Handcart], lighting_shader)
+	apply_shader(&prop_models[.Palm], lighting_shader)
+	apply_shader(&prop_models[.Banana], lighting_shader)
+	apply_shader(&prop_models[.House], lighting_shader)
+
 	camera := rl.Camera3D {
 		position   = {0, 3, -6},
 		target     = {0, 0, 2},
